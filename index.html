@@ -1,0 +1,1991 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CSE Course Sequence — Tracker</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --paper: #f4efe3;
+                --paper-deep: #ece4d2;
+                --ink: #1f3a5f;
+                --ink-soft: #5b7089;
+                --rule: #c9bfa6;
+                --hard: #ae3e22;
+                --soft: #2c7a8c;
+                --gened: #e3a93f;
+                --gened-bg: #fbebc7;
+                --schoolcore-bg: #b9d3e6;
+                --schoolcore-bd: #4e7ea0;
+                --core-bd: #1f3a5f;
+                --elective-bg: #bfd8b8;
+                --elective-bd: #4c7a47;
+                --thesis-bg: #e9babe;
+                --thesis-bd: #a24e56;
+                --done: #3e7a45;
+                --done-bg: #dcebdb;
+                --shadow:
+                    0 1px 0 rgba(31, 58, 95, 0.08),
+                    0 2px 6px rgba(31, 58, 95, 0.06);
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background:
+                    linear-gradient(var(--paper), var(--paper)),
+                    repeating-linear-gradient(
+                        0deg,
+                        rgba(31, 58, 95, 0.05) 0 1px,
+                        transparent 1px 28px
+                    ),
+                    repeating-linear-gradient(
+                        90deg,
+                        rgba(31, 58, 95, 0.05) 0 1px,
+                        transparent 1px 28px
+                    );
+                color: var(--ink);
+                font-family: "Source Serif 4", Georgia, serif;
+                min-height: 100vh;
+            }
+            .app {
+                max-width: 1480px;
+                margin: 0 auto;
+                padding: 26px 26px 60px;
+            }
+
+            /* ---------- Title block ---------- */
+            .titleblock {
+                border: 2px solid var(--ink);
+                background: var(--paper-deep);
+                display: grid;
+                grid-template-columns: 1fr auto;
+                box-shadow: var(--shadow);
+            }
+            .titleblock .main {
+                padding: 18px 22px;
+                border-right: 2px solid var(--ink);
+            }
+            .titleblock h1 {
+                font-family: "Fraunces", serif;
+                font-weight: 700;
+                font-size: 28px;
+                margin: 0 0 4px;
+                letter-spacing: 0.2px;
+            }
+            .titleblock .sub {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 13px;
+                color: var(--ink-soft);
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            .titleblock .stats {
+                display: grid;
+                grid-template-columns: repeat(3, 128px);
+                font-family: "JetBrains Mono", monospace;
+            }
+            .titleblock .stat {
+                padding: 10px 16px;
+                border-bottom: 1px solid var(--rule);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .titleblock .stat:nth-child(1),
+            .titleblock .stat:nth-child(2) {
+                border-right: 1px solid var(--rule);
+            }
+            .titleblock .stat .n {
+                font-size: 23px;
+                font-weight: 700;
+                color: var(--ink);
+            }
+            .titleblock .stat .l {
+                font-size: 10px;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                letter-spacing: 0.6px;
+                margin-top: 2px;
+            }
+            .progresswrap {
+                grid-column: 1/-1;
+                padding: 0 22px 16px;
+                border-top: 1px solid var(--rule);
+            }
+            .progressbar {
+                height: 9px;
+                background: var(--paper);
+                border: 1px solid var(--rule);
+                margin-top: 10px;
+                overflow: hidden;
+            }
+            .progressbar > div {
+                height: 100%;
+                background: var(--done);
+                width: 0%;
+                transition: width 0.35s ease;
+            }
+
+            /* ---------- credit tracker ---------- */
+            .credits {
+                border: 1.5px solid var(--ink);
+                background: var(--paper-deep);
+                padding: 14px 18px 16px;
+                margin-bottom: 16px;
+                box-shadow: var(--shadow);
+            }
+            .credits h3 {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                margin: 0 0 10px;
+                color: var(--ink);
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+            .credits h3 .total {
+                font-size: 15px;
+                color: var(--ink);
+            }
+            .creditgrid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+                gap: 14px;
+            }
+            .creditrow .lbl {
+                display: flex;
+                justify-content: space-between;
+                font-size: 13px;
+                margin-bottom: 5px;
+            }
+            .creditrow .lbl b {
+                color: var(--ink);
+            }
+            .creditbar {
+                height: 8px;
+                background: var(--paper);
+                border: 1px solid var(--rule);
+                overflow: hidden;
+            }
+            .creditbar > div {
+                height: 100%;
+                background: var(--schoolcore-bd);
+                width: 0%;
+                transition: width 0.3s ease;
+            }
+            .creditfoot {
+                font-size: 11.5px;
+                color: var(--ink-soft);
+                font-style: italic;
+                margin-top: 10px;
+            }
+
+            /* ---------- toolbar ---------- */
+            .toolbar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin: 14px 0;
+            }
+            .btn {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 12.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                background: var(--paper);
+                border: 1.5px solid var(--ink);
+                color: var(--ink);
+                padding: 8px 13px;
+                cursor: pointer;
+                transition:
+                    background 0.15s,
+                    color 0.15s;
+            }
+            .btn:hover {
+                background: var(--ink);
+                color: var(--paper);
+            }
+            .btn.secondary {
+                border-color: var(--ink-soft);
+                color: var(--ink-soft);
+            }
+            .btn.secondary:hover {
+                background: var(--ink-soft);
+                color: #fff;
+            }
+            .btn.danger {
+                border-color: var(--hard);
+                color: var(--hard);
+            }
+            .btn.danger:hover {
+                background: var(--hard);
+                color: #fff;
+            }
+            .btn.danger.armed {
+                background: var(--hard);
+                color: #fff;
+            }
+            .hint {
+                font-size: 13.5px;
+                color: var(--ink-soft);
+                font-style: italic;
+            }
+
+            /* ---------- legend ---------- */
+            .legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 18px;
+                border: 1.5px solid var(--ink);
+                background: var(--paper-deep);
+                padding: 12px 18px;
+                margin-bottom: 16px;
+                box-shadow: var(--shadow);
+                font-size: 13.5px;
+            }
+            .legend h3 {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 11.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                margin: 0 18px 0 0;
+                color: var(--ink);
+                align-self: center;
+            }
+            .legend .grp {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+            .swatch {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .sw-box {
+                width: 17px;
+                height: 13px;
+                border: 1.3px solid var(--ink);
+                display: inline-block;
+            }
+            .sw-line {
+                width: 30px;
+                height: 0;
+                display: inline-block;
+                border-top: 3px solid var(--hard);
+                position: relative;
+            }
+            .sw-line.soft {
+                border-top: 3px dashed var(--soft);
+            }
+            .sw-line::after {
+                content: "";
+                position: absolute;
+                right: -1px;
+                top: -4px;
+                border: 5px solid transparent;
+                border-left-color: var(--hard);
+            }
+            .sw-line.soft::after {
+                border-left-color: var(--soft);
+            }
+
+            /* ---------- diagram column key ---------- */
+            .colkey {
+                font-size: 13.5px;
+                color: var(--ink-soft);
+                margin-bottom: 10px;
+                line-height: 1.6;
+                font-family: "JetBrains Mono", monospace;
+            }
+            .colkey b {
+                color: var(--ink);
+            }
+
+            /* ---------- canvas ---------- */
+            .scrollwrap {
+                border: 2px solid var(--ink);
+                background: var(--paper);
+                box-shadow: var(--shadow);
+                overflow: auto;
+                max-height: 76vh;
+                position: relative;
+            }
+            .canvas {
+                position: relative;
+                display: grid;
+                grid-template-columns: 96px repeat(5, 248px);
+                grid-template-rows: 50px;
+                grid-auto-rows: 122px;
+                gap: 22px 24px;
+                padding: 20px;
+                width: max-content;
+            }
+
+            /* FIXED: Absolute alignment sizing matrix for the lines engine */
+            #lines {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                pointer-events: none;
+                display: block;
+            }
+
+            .colhead {
+                grid-row: 1;
+                position: sticky;
+                top: 0;
+                z-index: 5;
+                background: var(--ink);
+                color: var(--paper);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+                text-align: center;
+                padding: 4px 6px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            }
+            .colhead .sub {
+                font-size: 9.5px;
+                font-weight: 400;
+                opacity: 0.85;
+                margin-top: 2px;
+                text-transform: none;
+                letter-spacing: 0.1px;
+            }
+            .colhead.corner {
+                grid-column: 1;
+                background: var(--paper-deep);
+                color: var(--ink);
+                box-shadow: none;
+            }
+
+            .rowlabel {
+                grid-column: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: "Fraunces", serif;
+                font-weight: 600;
+                font-size: 16.5px;
+                color: var(--ink-soft);
+                border-right: 1px dashed var(--rule);
+            }
+
+            /* ---------- cards ---------- */
+            .card {
+                position: relative;
+                z-index: 2;
+                border: 1.6px solid var(--core-bd);
+                background: #fff;
+                padding: 8px 10px 9px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                font-size: 13px;
+                box-shadow: var(--shadow);
+                transition:
+                    transform 0.12s ease,
+                    box-shadow 0.12s ease;
+            }
+            .card.cat-gened {
+                background: var(--gened-bg);
+                border-color: #b8862a;
+            }
+            .card.cat-genedNC {
+                background: var(--gened-bg);
+                border-style: dashed;
+                border-color: #b8862a;
+            }
+            .card.cat-schoolcore {
+                background: var(--schoolcore-bg);
+                border-color: var(--schoolcore-bd);
+            }
+            .card.cat-elective {
+                background: var(--elective-bg);
+                border-color: var(--elective-bd);
+            }
+            .card.cat-thesis {
+                background: var(--thesis-bg);
+                border-color: var(--thesis-bd);
+            }
+            .card.done {
+                background: var(--done-bg) !important;
+                border-color: var(--done) !important;
+            }
+            .card.notapplicable {
+                opacity: 0.35;
+                filter: grayscale(0.8);
+                pointer-events: none;
+            }
+            .card.flash {
+                animation: flash 1.1s ease;
+            }
+            .card:hover {
+                outline: 2px solid var(--ink);
+                outline-offset: 1px;
+                cursor: default;
+            }
+            @keyframes flash {
+                0%,
+                100% {
+                    box-shadow: var(--shadow);
+                }
+                20%,
+                60% {
+                    box-shadow: 0 0 0 3px var(--hard);
+                }
+            }
+
+            .card .top {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .card .code {
+                font-family: "JetBrains Mono", monospace;
+                font-weight: 700;
+                font-size: 14.5px;
+                color: var(--ink);
+                line-height: 1.15;
+            }
+            .card.done .code {
+                color: var(--done);
+            }
+            .card .note {
+                font-size: 10.5px;
+                color: var(--ink-soft);
+                font-style: italic;
+                margin-top: 1px;
+            }
+            .card .waived-badge {
+                font-size: 10.5px;
+                color: var(--hard);
+                font-weight: 700;
+                margin-top: 4px;
+            }
+            .card input[type="checkbox"] {
+                width: 19px;
+                height: 19px;
+                flex: none;
+                cursor: pointer;
+                accent-color: var(--done);
+                margin-top: 1px;
+            }
+            .card .req {
+                font-size: 11px;
+                color: var(--ink-soft);
+                line-height: 1.4;
+                margin-top: 3px;
+            }
+            .card .req b.hp {
+                color: var(--hard);
+                font-weight: 700;
+            }
+            .card .req b.sp {
+                color: var(--soft);
+                font-weight: 700;
+            }
+            .card .warn {
+                font-size: 10.5px;
+                color: var(--hard);
+                margin-top: 2px;
+                display: none;
+            }
+            .card.softwarn .warn {
+                display: block;
+            }
+            .card input[type="text"] {
+                width: 100%;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 13px;
+                border: 1px solid var(--ink-soft);
+                background: #fffdf7;
+                padding: 4px 5px;
+                margin-top: 3px;
+                color: var(--ink);
+            }
+            .card .elabel {
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--ink-soft);
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+
+            /* ---------- setup modal ---------- */
+            .modalveil {
+                position: fixed;
+                inset: 0;
+                background: rgba(31, 58, 95, 0.45);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 100;
+                padding: 20px;
+            }
+            .modalveil.hidden {
+                display: none;
+            }
+            .modalbox {
+                background: var(--paper);
+                border: 2px solid var(--ink);
+                max-width: 460px;
+                width: 100%;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+                padding: 22px 24px;
+                position: relative;
+            }
+            .modalbox h2 {
+                font-family: "Fraunces", serif;
+                font-size: 20px;
+                margin: 0 0 10px;
+                color: var(--ink);
+            }
+            .modalbox p {
+                font-size: 14px;
+                line-height: 1.55;
+                color: var(--ink-soft);
+                margin: 0 0 16px;
+            }
+            .modalbox .opts {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 6px;
+            }
+            .modalbox label.check {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 14px;
+                border: 1.3px solid var(--rule);
+                padding: 9px 12px;
+                background: #fff;
+                cursor: pointer;
+            }
+            .modalbox label.check input {
+                width: 17px;
+                height: 17px;
+                accent-color: var(--done);
+            }
+            .modalbox .row {
+                display: flex;
+                gap: 10px;
+                margin-top: 16px;
+                justify-content: flex-end;
+            }
+
+            /* ---------- toast ---------- */
+            #toast {
+                position: fixed;
+                left: 50%;
+                bottom: 28px;
+                transform: translateX(-50%) translateY(20px);
+                background: var(--ink);
+                color: var(--paper);
+                font-family: "JetBrains Mono", monospace;
+                font-size: 13px;
+                padding: 12px 18px;
+                max-width: 520px;
+                text-align: center;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.25s ease;
+                z-index: 50;
+            }
+            #toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            footer {
+                margin-top: 18px;
+                font-size: 12.5px;
+                color: var(--ink-soft);
+                font-style: italic;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app">
+            <div class="titleblock">
+                <div class="main">
+                    <h1>CSE Course Sequence</h1>
+                    <div class="sub">
+                        Personal progress tracker · first semester combination
+                        ENG091 + MAT092
+                    </div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="n" id="statDone">0</span
+                        ><span class="l">Completed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="n" id="statTotal">0</span
+                        ><span class="l">Total Nodes</span>
+                    </div>
+                    <div class="stat">
+                        <span class="n" id="statPct">0%</span
+                        ><span class="l">Progress</span>
+                    </div>
+                </div>
+                <div class="progresswrap">
+                    <span class="hint"
+                        >Tick a box once its hard prerequisites are done — soft
+                        prerequisites are only suggestions and never block a
+                        tick.</span
+                    >
+                    <div class="progressbar"><div id="progressFill"></div></div>
+                </div>
+            </div>
+
+            <div class="credits">
+                <h3>
+                    Credit Tracker
+                    <span class="total" id="creditTotalLabel"
+                        >0 / 0 credits</span
+                    >
+                </h3>
+                <div class="creditgrid" id="creditGrid"></div>
+                <div class="creditfoot">
+                    Program total dynamically calculated based on workspace
+                    nodes. All standard courses carry exactly 3 credits.
+                    Foundation courses (MAT092 &amp; ENG091) carry 0 credits.
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <button class="btn" id="foundationBtn">
+                    Foundation courses ⚙
+                </button>
+                <button class="btn" id="toggleSoftBtn">
+                    Hide soft‑prereq lines
+                </button>
+                <button class="btn" id="toggleLinesBtn">Hide all lines</button>
+                <button class="btn danger" id="resetBtn">
+                    Reset all progress
+                </button>
+                <span class="hint" id="saveState"
+                    >Saved to your account · private to you</span
+                >
+            </div>
+
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="grp">
+                    <span class="swatch"
+                        ><span class="sw-box" style="background: #fff"></span
+                        >Program Core</span
+                    >
+                    <span class="swatch"
+                        ><span
+                            class="sw-box"
+                            style="
+                                background: var(--gened-bg);
+                                border-style: solid;
+                            "
+                        ></span
+                        >GenEd</span
+                    >
+                    <span class="swatch"
+                        ><span
+                            class="sw-box"
+                            style="
+                                background: var(--gened-bg);
+                                border-style: dashed;
+                            "
+                        ></span
+                        >GenEd (non‑credit)</span
+                    >
+                    <span class="swatch"
+                        ><span
+                            class="sw-box"
+                            style="background: var(--schoolcore-bg)"
+                        ></span
+                        >School Core</span
+                    >
+                    <span class="swatch"
+                        ><span
+                            class="sw-box"
+                            style="background: var(--elective-bg)"
+                        ></span
+                        >Program Elective</span
+                    >
+                    <span class="swatch"
+                        ><span
+                            class="sw-box"
+                            style="background: var(--thesis-bg)"
+                        ></span
+                        >Thesis / Project</span
+                    >
+                    <span class="swatch"
+                        ><span
+                            class="sw-box"
+                            style="
+                                background: var(--done-bg);
+                                border-color: var(--done);
+                            "
+                        ></span
+                        >Completed</span
+                    >
+                </div>
+                <div class="grp">
+                    <span class="swatch"
+                        ><span class="sw-line"></span>Hard prereq —
+                        <b style="color: var(--hard)"
+                            >blocks the tickbox</b
+                        ></span
+                    >
+                    <span class="swatch"
+                        ><span class="sw-line soft"></span>Soft prereq —
+                        <b style="color: var(--soft)">suggestion only</b></span
+                    >
+                </div>
+            </div>
+
+            <div class="colkey">
+                <b>Column A</b> — CSE programming/systems core &nbsp;·&nbsp;
+                <b>Column B</b> — Math &amp; data track &nbsp;·&nbsp;
+                <b>Column C</b> — English / Physics / CSE core II &nbsp;·&nbsp;
+                <b>Column D</b> — GenEd, support &amp; electives &nbsp;·&nbsp;
+                <b>Column E</b> — Thesis track. Column headers repeat above the
+                diagram as you scroll. Hover any course to see exactly which
+                lines connect to it.
+            </div>
+
+            <div class="scrollwrap">
+                <div class="canvas" id="canvas">
+                    <svg id="lines"></svg>
+                </div>
+            </div>
+
+            <footer>
+                GenEd and Elective boxes are yours to fill in — type the real
+                course code once you register for it. Everything you tick or
+                type is saved automatically to your account.
+            </footer>
+        </div>
+
+        <div id="toast"></div>
+
+        <!-- Foundation Modal Setup -->
+        <div class="modalveil hidden" id="setupModal">
+            <div class="modalbox">
+                <h2>Non‑credit foundation courses</h2>
+                <p id="setupQ1text">
+                    MAT092 (Math) and ENG091 (English) are non‑credit courses
+                    only some students are placed into based on the admission
+                    test. Did you have to take either of them?
+                </p>
+
+                <div id="setupStep1" class="opts">
+                    <button class="btn" id="setupNo" style="width: 100%">
+                        No — I placed out of both
+                    </button>
+                    <button class="btn" id="setupYes" style="width: 100%">
+                        Yes — I was placed into one or both
+                    </button>
+                    <button
+                        class="btn secondary modal-close-trigger"
+                        style="width: 100%; margin-top: 4px"
+                    >
+                        Cancel / Close
+                    </button>
+                </div>
+
+                <div id="setupStep2" style="display: none">
+                    <div class="opts">
+                        <label class="check"
+                            ><input type="checkbox" id="chkMAT092" /> MAT092 —
+                            required for me</label
+                        >
+                        <label class="check"
+                            ><input type="checkbox" id="chkENG091" /> ENG091 —
+                            required for me</label
+                        >
+                    </div>
+                    <p style="margin: 10px 0 0; font-size: 12.5px">
+                        Leave a box unticked if you placed out of it — that
+                        course will grey out and its dependent course (MAT110 or
+                        ENG101) becomes directly available to you.
+                    </p>
+                    <div class="row">
+                        <button
+                            class="btn secondary modal-close-trigger"
+                            id="setupCancel"
+                        >
+                            Cancel
+                        </button>
+                        <button class="btn" id="setupSave">
+                            Save Configuration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            /* ===================== DATA ===================== */
+            const DATA = [
+                // Column A
+                {
+                    id: "CSE110",
+                    code: "CSE110",
+                    track: 1,
+                    row: 1,
+                    cat: "core",
+                    credit: 3,
+                },
+                {
+                    id: "CSE111",
+                    code: "CSE111",
+                    track: 1,
+                    row: 2,
+                    cat: "core",
+                    hp: ["CSE110"],
+                    credit: 3,
+                },
+                {
+                    id: "BNG103",
+                    code: "BNG103",
+                    track: 1,
+                    row: 3,
+                    cat: "gened",
+                    credit: 3,
+                },
+                {
+                    id: "CSE220",
+                    code: "CSE220",
+                    track: 1,
+                    row: 4,
+                    cat: "core",
+                    hp: ["CSE111", "CSE230"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE221",
+                    code: "CSE221",
+                    track: 1,
+                    row: 5,
+                    cat: "core",
+                    hp: ["CSE220"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE321",
+                    code: "CSE321",
+                    track: 1,
+                    row: 6,
+                    cat: "core",
+                    hp: ["CSE221"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE370",
+                    code: "CSE370",
+                    track: 1,
+                    row: 7,
+                    cat: "core",
+                    hp: ["CSE221"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE422",
+                    code: "CSE422",
+                    track: 1,
+                    row: 8,
+                    cat: "core",
+                    hp: ["CSE221"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE331",
+                    code: "CSE331",
+                    track: 1,
+                    row: 9,
+                    cat: "core",
+                    hp: ["CSE221"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE420",
+                    code: "CSE420",
+                    track: 1,
+                    row: 10,
+                    cat: "core",
+                    hp: ["CSE321", "CSE331", "CSE340"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE470",
+                    code: "CSE470",
+                    track: 1,
+                    row: 11,
+                    cat: "core",
+                    hp: ["CSE370"],
+                    credit: 3,
+                },
+                {
+                    id: "ElectiveI",
+                    code: "Elective I",
+                    track: 1,
+                    row: 12,
+                    cat: "elective",
+                    editable: true,
+                    defText: "",
+                    credit: 3,
+                },
+
+                // Column B
+                {
+                    id: "MAT092",
+                    code: "MAT092",
+                    track: 2,
+                    row: 1,
+                    cat: "genedNC",
+                    credit: 0,
+                },
+                {
+                    id: "CSE230",
+                    code: "CSE230",
+                    track: 2,
+                    row: 2,
+                    cat: "core",
+                    credit: 3,
+                },
+                {
+                    id: "DEVEMB101",
+                    code: "DEV/EMB101",
+                    track: 2,
+                    row: 3,
+                    cat: "gened",
+                    credit: 3,
+                },
+                {
+                    id: "STA201",
+                    code: "STA201",
+                    track: 2,
+                    row: 4,
+                    cat: "gened",
+                    credit: 3,
+                },
+                {
+                    id: "MAT110",
+                    code: "MAT110",
+                    track: 2,
+                    row: 5,
+                    cat: "gened",
+                    hp: ["MAT092"],
+                    credit: 3,
+                },
+                {
+                    id: "MAT120",
+                    code: "MAT120",
+                    track: 2,
+                    row: 6,
+                    cat: "schoolcore",
+                    hp: ["MAT110"],
+                    credit: 3,
+                },
+                {
+                    id: "MAT216",
+                    code: "MAT216",
+                    track: 2,
+                    row: 7,
+                    cat: "schoolcore",
+                    hp: ["MAT120"],
+                    credit: 3,
+                },
+                {
+                    id: "MAT215",
+                    code: "MAT215",
+                    track: 2,
+                    row: 8,
+                    cat: "schoolcore",
+                    hp: ["MAT216"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE330",
+                    code: "CSE330",
+                    track: 2,
+                    row: 9,
+                    cat: "core",
+                    hp: ["MAT216"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE423",
+                    code: "CSE423",
+                    track: 2,
+                    row: 10,
+                    cat: "core",
+                    hp: ["MAT216"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE471",
+                    code: "CSE471",
+                    track: 2,
+                    row: 11,
+                    cat: "core",
+                    hp: ["CSE370"],
+                    credit: 3,
+                },
+                {
+                    id: "ElectiveII",
+                    code: "Elective II",
+                    track: 2,
+                    row: 12,
+                    cat: "elective",
+                    editable: true,
+                    defText: "",
+                    credit: 3,
+                },
+
+                // Column C
+                {
+                    id: "ENG091",
+                    code: "ENG091",
+                    track: 3,
+                    row: 1,
+                    cat: "genedNC",
+                    credit: 0,
+                },
+                {
+                    id: "ENG101",
+                    code: "ENG101",
+                    track: 3,
+                    row: 2,
+                    cat: "gened",
+                    hp: ["ENG091"],
+                    credit: 3,
+                },
+                {
+                    id: "ENG102",
+                    code: "ENG102",
+                    track: 3,
+                    row: 3,
+                    cat: "gened",
+                    hp: ["ENG101"],
+                    credit: 3,
+                },
+                {
+                    id: "PHY112",
+                    code: "PHY112",
+                    track: 3,
+                    row: 4,
+                    cat: "schoolcore",
+                    hp: ["PHY111"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE250",
+                    code: "CSE250",
+                    track: 3,
+                    row: 5,
+                    cat: "core",
+                    sp: ["PHY112"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE251",
+                    code: "CSE251",
+                    track: 3,
+                    row: 6,
+                    cat: "core",
+                    hp: ["CSE250"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE260",
+                    code: "CSE260",
+                    track: 3,
+                    row: 7,
+                    cat: "core",
+                    hp: ["CSE251"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE340",
+                    code: "CSE340",
+                    track: 3,
+                    row: 8,
+                    cat: "core",
+                    sp: ["CSE260"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE341",
+                    code: "CSE341",
+                    track: 3,
+                    row: 9,
+                    cat: "core",
+                    sp: ["CSE321", "CSE340"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE360",
+                    code: "CSE360",
+                    track: 3,
+                    row: 10,
+                    cat: "core",
+                    hp: ["CSE341"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE460",
+                    code: "CSE460",
+                    track: 3,
+                    row: 11,
+                    cat: "core",
+                    hp: ["CSE260"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE461",
+                    code: "CSE461",
+                    track: 3,
+                    row: 12,
+                    cat: "core",
+                    hp: ["CSE260"],
+                    credit: 3,
+                },
+
+                // Column D
+                {
+                    id: "PHY111",
+                    code: "PHY111",
+                    track: 4,
+                    row: 2,
+                    cat: "gened",
+                    credit: 3,
+                },
+                {
+                    id: "HUM103",
+                    code: "HUM103",
+                    track: 4,
+                    row: 3,
+                    cat: "gened",
+                    credit: 3,
+                },
+                {
+                    id: "GEN_R4",
+                    code: "GenEd",
+                    track: 4,
+                    row: 4,
+                    cat: "gened",
+                    editable: true,
+                    defText: "GenEd",
+                    credit: 3,
+                },
+                {
+                    id: "GEN_R5",
+                    code: "GenEd",
+                    track: 4,
+                    row: 5,
+                    cat: "gened",
+                    editable: true,
+                    defText: "GenEd",
+                    credit: 3,
+                },
+                {
+                    id: "GEN_R6",
+                    code: "GenEd",
+                    track: 4,
+                    row: 6,
+                    cat: "gened",
+                    editable: true,
+                    defText: "GenEd",
+                    credit: 3,
+                },
+                {
+                    id: "GEN_R7",
+                    code: "GenEd",
+                    track: 4,
+                    row: 7,
+                    cat: "gened",
+                    editable: true,
+                    defText: "GenEd",
+                    credit: 3,
+                },
+                {
+                    id: "CSE350",
+                    code: "CSE350",
+                    track: 4,
+                    row: 8,
+                    cat: "core",
+                    hp: ["CSE251"],
+                    credit: 3,
+                },
+                {
+                    id: "CSE320",
+                    code: "CSE320",
+                    track: 4,
+                    row: 9,
+                    cat: "core",
+                    credit: 3,
+                },
+                {
+                    id: "CSE421",
+                    code: "CSE421",
+                    track: 4,
+                    row: 10,
+                    cat: "core",
+                    sp: ["CSE320"],
+                    credit: 3,
+                },
+                {
+                    id: "GEN_R12",
+                    code: "GenEd",
+                    track: 4,
+                    row: 12,
+                    cat: "gened",
+                    editable: true,
+                    defText: "GenEd",
+                    credit: 3,
+                },
+
+                // Column E
+                {
+                    id: "PRETHESIS1",
+                    code: "Pre-Thesis I",
+                    track: 5,
+                    row: 9,
+                    cat: "thesis",
+                    note: "(Part I)",
+                    credit: 3,
+                },
+                {
+                    id: "PRETHESIS2",
+                    code: "Pre-Thesis II",
+                    track: 5,
+                    row: 10,
+                    cat: "thesis",
+                    note: "(Part II)",
+                    hp: ["PRETHESIS1"],
+                    credit: 3,
+                },
+                {
+                    id: "FINALTHESIS",
+                    code: "Final Thesis",
+                    track: 5,
+                    row: 11,
+                    cat: "thesis",
+                    note: "CSE400",
+                    hp: ["PRETHESIS2"],
+                    credit: 3,
+                },
+                {
+                    id: "DEFERRED",
+                    code: "Final Thesis",
+                    track: 5,
+                    row: 12,
+                    cat: "thesis",
+                    note: "(if deferred) CSE400",
+                    sp: ["FINALTHESIS"],
+                    credit: 0,
+                    excludeFromTotal: true,
+                },
+            ];
+
+            const byId = {};
+            DATA.forEach((n) => (byId[n.id] = n));
+            const ROW_LABELS = [
+                "1",
+                "2",
+                "3 (RS)",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+            ];
+
+            const CATEGORIES = {
+                core: { name: "Program Core", total: 0, done: 0 },
+                schoolcore: { name: "School Core", total: 0, done: 0 },
+                gened: { name: "GenEd", total: 0, done: 0 },
+                elective: { name: "Electives", total: 0, done: 0 },
+                thesis: { name: "Thesis / Capstone", total: 0, done: 0 },
+            };
+
+            /* ===================== STATE ===================== */
+            let state = { done: {}, text: {}, waived: {} };
+            let showSoft = true;
+            let showLines = true;
+
+            function loadState() {
+                try {
+                    const r = localStorage.getItem("cse-tracker-state");
+                    if (r) {
+                        state = JSON.parse(r);
+                    }
+                    if (!state.waived) state.waived = {};
+                } catch (e) {
+                    console.error(
+                        "Could not load state from local storage.",
+                        e,
+                    );
+                }
+            }
+
+            let saveTimer = null;
+            function persist() {
+                document.getElementById("saveState").textContent = "Saving…";
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => {
+                    try {
+                        localStorage.setItem(
+                            "cse-tracker-state",
+                            JSON.stringify(state),
+                        );
+                        document.getElementById("saveState").textContent =
+                            "Saved to your account · private to you";
+                    } catch (e) {
+                        document.getElementById("saveState").textContent =
+                            "Could not save (storage unavailable)";
+                    }
+                }, 250);
+            }
+
+            /* ===================== CONFIG CALCULATION ===================== */
+            function calculateCategoryTotals() {
+                Object.keys(CATEGORIES).forEach((k) => {
+                    CATEGORIES[k].total = 0;
+                });
+                DATA.forEach((n) => {
+                    if (
+                        CATEGORIES[n.cat] &&
+                        !n.excludeFromTotal &&
+                        !state.waived[n.id]
+                    ) {
+                        CATEGORIES[n.cat].total += n.credit;
+                    }
+                });
+            }
+
+            /* ===================== RENDER ===================== */
+            function displayCode(n) {
+                if (n.editable) {
+                    const t = state.text[n.id];
+                    return (t === undefined ? n.defText : t) || "";
+                }
+                return n.code;
+            }
+            function labelText(n) {
+                if (n.id === "ElectiveI") return "Elective I";
+                if (n.id === "ElectiveII") return "Elective II";
+                return null;
+            }
+
+            function reqLine(n) {
+                const hp = n.hp || [],
+                    sp = n.sp || [];
+                let parts = [];
+                if (hp.length)
+                    parts.push(
+                        '<b class="hp">HP:</b> ' +
+                            hp
+                                .map((id) => (byId[id] ? byId[id].code : id))
+                                .join("+"),
+                    );
+                if (sp.length)
+                    parts.push(
+                        '<b class="sp">SP:</b> ' +
+                            sp
+                                .map((id) => (byId[id] ? byId[id].code : id))
+                                .join("+"),
+                    );
+                return parts.join(" &nbsp;·&nbsp; ");
+            }
+
+            function buildCanvas() {
+                const canvas = document.getElementById("canvas");
+                canvas.innerHTML = '<svg id="lines"></svg>';
+
+                const corner = document.createElement("div");
+                corner.className = "colhead corner";
+                corner.textContent = "ROW";
+                canvas.appendChild(corner);
+
+                const colHeadings = [
+                    { title: "Column A", sub: "Programming Core" },
+                    { title: "Column B", sub: "Math & Data Track" },
+                    { title: "Column C", sub: "English / Physics" },
+                    { title: "Column D", sub: "GenEd & Support" },
+                    { title: "Column E", sub: "Thesis Track" },
+                ];
+
+                colHeadings.forEach((h, i) => {
+                    const div = document.createElement("div");
+                    div.className = "colhead";
+                    div.style.gridColumn = String(i + 2);
+                    div.style.gridRow = "1";
+                    div.innerHTML = `${h.title}<div class="sub">${h.sub}</div>`;
+                    canvas.appendChild(div);
+                });
+
+                ROW_LABELS.forEach((lab, i) => {
+                    const div = document.createElement("div");
+                    div.className = "rowlabel";
+                    div.style.gridColumn = "1";
+                    div.style.gridRow = String(i + 2);
+                    div.innerHTML = lab;
+                    canvas.appendChild(div);
+                });
+
+                DATA.forEach((n) => {
+                    const card = document.createElement("div");
+                    card.className = "card cat-" + n.cat;
+                    card.dataset.id = n.id;
+                    card.style.gridColumn = String(n.track + 1);
+                    card.style.gridRow = String(n.row + 1);
+
+                    const top = document.createElement("div");
+                    top.className = "top";
+
+                    const left = document.createElement("div");
+                    left.style.flex = "1";
+                    const codeDiv = document.createElement("div");
+                    codeDiv.className = "code";
+                    const lbl = labelText(n);
+                    if (n.editable) {
+                        codeDiv.innerHTML = lbl
+                            ? '<span class="elabel">' + lbl + "</span><br>"
+                            : "";
+                        left.appendChild(codeDiv);
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.placeholder = lbl ? "CSE ___" : "GenEd";
+                        input.value = displayCode(n);
+                        input.addEventListener("input", (e) => {
+                            state.text[n.id] = e.target.value;
+                            persist();
+                        });
+                        left.appendChild(input);
+                    } else {
+                        codeDiv.textContent = n.code;
+                        left.appendChild(codeDiv);
+                        if (n.note) {
+                            const note = document.createElement("div");
+                            note.className = "note";
+                            note.textContent = n.note;
+                            left.appendChild(note);
+                        }
+                    }
+                    top.appendChild(left);
+
+                    const chk = document.createElement("input");
+                    chk.type = "checkbox";
+                    chk.checked = !!state.done[n.id];
+                    chk.addEventListener("change", (e) =>
+                        toggleCourse(n.id, e.target.checked, card),
+                    );
+                    top.appendChild(chk);
+
+                    card.appendChild(top);
+
+                    const req = document.createElement("div");
+                    req.className = "req";
+                    req.innerHTML = reqLine(n) || "&nbsp;";
+                    card.appendChild(req);
+
+                    const warn = document.createElement("div");
+                    warn.className = "warn";
+                    warn.textContent = "⚠ soft prereq not done";
+                    card.appendChild(warn);
+
+                    card.addEventListener("mouseenter", () =>
+                        highlightNode(n.id),
+                    );
+                    card.addEventListener("mouseleave", clearHighlight);
+
+                    canvas.appendChild(card);
+                });
+
+                const svg = document.getElementById("lines");
+                svg.innerHTML = `
+    <defs>
+      <marker id="arrHard" markerWidth="9.5" markerHeight="9.5" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 Z" fill="var(--hard)"/>
+      </marker>
+      <marker id="arrSoft" markerWidth="9.5" markerHeight="9.5" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 Z" fill="var(--soft)"/>
+      </marker>
+    </defs>`;
+            }
+
+            function updateCardVisuals() {
+                calculateCategoryTotals();
+                Object.keys(CATEGORIES).forEach(
+                    (k) => (CATEGORIES[k].done = 0),
+                );
+
+                document.querySelectorAll(".card").forEach((card) => {
+                    const n = byId[card.dataset.id];
+                    const isWaived = !!state.waived[n.id];
+                    const isDone = !!state.done[n.id] || isWaived;
+
+                    card.classList.toggle("notapplicable", isWaived);
+                    card.classList.toggle("done", isDone && !isWaived);
+
+                    const badge = card.querySelector(".waived-badge");
+                    if (isWaived && !badge) {
+                        const b = document.createElement("div");
+                        b.className = "waived-badge";
+                        b.textContent = "WAIVED";
+                        card.querySelector(".top").appendChild(b);
+                    } else if (!isWaived && badge) {
+                        badge.remove();
+                    }
+
+                    const sp = n.sp || [];
+                    const spMissing = sp.some((id) => {
+                        return !state.done[id] && !state.waived[id];
+                    });
+                    card.classList.toggle(
+                        "softwarn",
+                        spMissing && sp.length > 0 && !isDone,
+                    );
+
+                    const chk = card.querySelector("input[type=checkbox]");
+                    if (chk) {
+                        chk.checked = !!state.done[n.id];
+                        chk.style.display = isWaived ? "none" : "block";
+                    }
+
+                    if (isDone && CATEGORIES[n.cat] && !n.excludeFromTotal) {
+                        CATEGORIES[n.cat].done += n.credit;
+                    }
+                });
+
+                const totalNodes = DATA.length;
+                const doneNodes = DATA.filter(
+                    (n) => state.done[n.id] || state.waived[n.id],
+                ).length;
+                document.getElementById("statDone").textContent = doneNodes;
+                document.getElementById("statTotal").textContent = totalNodes;
+                const pct = totalNodes
+                    ? Math.round((doneNodes / totalNodes) * 100)
+                    : 0;
+                document.getElementById("statPct").textContent = pct + "%";
+                document.getElementById("progressFill").style.width = pct + "%";
+
+                renderCreditTracker();
+            }
+
+            function renderCreditTracker() {
+                const container = document.getElementById("creditGrid");
+                container.innerHTML = "";
+                let overallEarned = 0;
+                let overallTotal = 0;
+
+                Object.keys(CATEGORIES).forEach((k) => {
+                    overallTotal += CATEGORIES[k].total;
+                });
+
+                Object.keys(CATEGORIES).forEach((k) => {
+                    const cat = CATEGORIES[k];
+                    overallEarned += cat.done;
+                    const row = document.createElement("div");
+                    row.className = "creditrow";
+                    const progressPct =
+                        cat.total > 0
+                            ? Math.min(
+                                  100,
+                                  Math.round((cat.done / cat.total) * 100),
+                              )
+                            : 0;
+
+                    row.innerHTML = `
+      <div class="lbl"><span>${cat.name}</span><b>${cat.done} / ${cat.total} cr</b></div>
+      <div class="creditbar"><div style="width: ${progressPct}%; background: var(--schoolcore-bd);"></div></div>
+    `;
+                    container.appendChild(row);
+                });
+
+                document.getElementById("creditTotalLabel").textContent =
+                    `${overallEarned} / ${overallTotal} credits`;
+            }
+
+            let fanCounter = 0;
+            function drawLines() {
+                const canvas = document.getElementById("canvas");
+                const svg = document.getElementById("lines");
+                if (!svg || !canvas) return;
+
+                svg.setAttribute("width", String(canvas.scrollWidth));
+                svg.setAttribute("height", String(canvas.scrollHeight));
+
+                [...svg.querySelectorAll("path.edge")].forEach((p) =>
+                    p.remove(),
+                );
+                if (!showLines) return;
+                fanCounter = 0;
+
+                DATA.forEach((n) => {
+                    if (state.waived[n.id]) return;
+                    (n.hp || []).forEach((srcId) =>
+                        drawEdge(srcId, n.id, "hard"),
+                    );
+                    if (showSoft) {
+                        (n.sp || []).forEach((srcId) =>
+                            drawEdge(srcId, n.id, "soft"),
+                        );
+                    }
+                });
+            }
+
+            /* FIXED: Re-engineered function scope to cleanly fetch the active layout canvas */
+            function drawEdge(srcId, tgtId, kind) {
+                const s = byId[srcId],
+                    t = byId[tgtId];
+                if (!s || !t) return;
+
+                const canvas = document.getElementById("canvas");
+                const svg = document.getElementById("lines"); // Fixed lexical targeting bug
+                const fromCard = canvas.querySelector(
+                    `.card[data-id="${srcId}"]`,
+                );
+                const toCard = canvas.querySelector(
+                    `.card[data-id="${tgtId}"]`,
+                );
+                if (!fromCard || !toCard || !svg) return;
+
+                const containerRect = canvas.getBoundingClientRect();
+                const fRect = fromCard.getBoundingClientRect();
+                const tRect = toCard.getBoundingClientRect();
+
+                const sx = fRect.left + fRect.width / 2 - containerRect.left;
+                const sy = fRect.bottom - containerRect.top;
+                const tx = tRect.left + tRect.width / 2 - containerRect.left;
+                const ty = tRect.top - containerRect.top;
+
+                let d;
+                const sameTrack = s.track === t.track;
+                const rowGap = t.row - s.row;
+                if (sameTrack && rowGap === 1) {
+                    d = `M ${sx},${sy} L ${tx},${ty}`;
+                } else if (sameTrack && rowGap > 1) {
+                    fanCounter++;
+                    const bulge = 14 + (fanCounter % 4) * 9;
+                    const sign = fanCounter % 2 === 0 ? 1 : -1;
+                    const bx = sx + sign * bulge;
+                    d = `M ${sx},${sy} C ${bx},${sy + 24} ${bx},${ty - 24} ${tx},${ty}`;
+                } else {
+                    const my = (sy + ty) / 2;
+                    d = `M ${sx},${sy} C ${sx},${my} ${tx},${my} ${tx},${ty}`;
+                }
+
+                const isHard = kind === "hard";
+                const satisfied = !!state.done[srcId] || !!state.waived[srcId];
+                const baseWidth = isHard ? 3.2 : 2.6;
+
+                const halo = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "path",
+                );
+                halo.setAttribute("d", d);
+                halo.setAttribute("class", "edge edge-halo");
+                halo.setAttribute("fill", "none");
+                halo.setAttribute("stroke", getVar("--paper"));
+                halo.setAttribute("stroke-width", String(baseWidth + 3.5));
+                halo.setAttribute("stroke-linecap", "round");
+                halo.setAttribute("opacity", "0.9");
+                svg.appendChild(halo);
+
+                const path = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "path",
+                );
+                path.setAttribute("d", d);
+                path.setAttribute("class", "edge");
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke-linecap", "round");
+                path.dataset.src = srcId;
+                path.dataset.tgt = tgtId;
+                path.dataset.hard = isHard ? "1" : "0";
+                path.dataset.baseWidth = String(baseWidth);
+                path.setAttribute(
+                    "stroke",
+                    isHard ? getVar("--hard") : getVar("--soft"),
+                );
+                path.setAttribute("stroke-width", String(baseWidth));
+                if (!isHard) path.setAttribute("stroke-dasharray", "7,6");
+                path.setAttribute(
+                    "marker-end",
+                    isHard ? "url(#arrHard)" : "url(#arrSoft)",
+                );
+                path.setAttribute("opacity", satisfied ? "1" : "0.3");
+                svg.appendChild(path);
+            }
+
+            function highlightNode(id) {
+                document
+                    .querySelectorAll("path.edge:not(.edge-halo)")
+                    .forEach((p) => {
+                        const related =
+                            p.dataset.src === id || p.dataset.tgt === id;
+                        if (related) {
+                            p.style.opacity = "1";
+                            p.setAttribute(
+                                "stroke-width",
+                                String(parseFloat(p.dataset.baseWidth) + 1.6),
+                            );
+                        } else {
+                            p.style.opacity = "0.08";
+                        }
+                    });
+                document.querySelectorAll("path.edge-halo").forEach((p) => {
+                    p.style.opacity = "0.15";
+                });
+            }
+            function clearHighlight() {
+                drawLines();
+            }
+            function getVar(name) {
+                return getComputedStyle(document.documentElement)
+                    .getPropertyValue(name)
+                    .trim();
+            }
+
+            function render() {
+                updateCardVisuals();
+                drawLines();
+            }
+
+            /* ===================== INTERACTION ===================== */
+            function showToast(msg) {
+                const el = document.getElementById("toast");
+                el.textContent = msg;
+                el.classList.add("show");
+                clearTimeout(showToast._t);
+                showToast._t = setTimeout(
+                    () => el.classList.remove("show"),
+                    3200,
+                );
+            }
+
+            function closeModal() {
+                document.getElementById("setupModal").classList.add("hidden");
+            }
+
+            function flashMissing(ids) {
+                ids.forEach((id) => {
+                    const card = document.querySelector(
+                        '.card[data-id="' + id + '"]',
+                    );
+                    if (card) {
+                        card.classList.add("flash");
+                        setTimeout(() => card.classList.remove("flash"), 1150);
+                    }
+                });
+            }
+
+            function cascadeUncheck(id, uncheckedList) {
+                DATA.forEach((n) => {
+                    if ((n.hp || []).includes(id) && state.done[n.id]) {
+                        state.done[n.id] = false;
+                        uncheckedList.push(n.id);
+                        cascadeUncheck(n.id, uncheckedList);
+                    }
+                });
+            }
+
+            function toggleCourse(id, wantChecked, cardEl) {
+                const n = byId[id];
+                if (wantChecked) {
+                    const missing = (n.hp || []).filter(
+                        (h) => !state.done[h] && !state.waived[h],
+                    );
+                    if (missing.length) {
+                        const chk = cardEl.querySelector(
+                            "input[type=checkbox]",
+                        );
+                        if (chk) chk.checked = false;
+                        flashMissing(missing);
+                        const names = missing
+                            .map((m) => (byId[m] ? byId[m].code : m))
+                            .join(", ");
+                        showToast(
+                            "Locked: finish hard prerequisite " +
+                                names +
+                                " first.",
+                        );
+                        return;
+                    }
+                    state.done[id] = true;
+                } else {
+                    state.done[id] = false;
+                    const cascaded = [];
+                    cascadeUncheck(id, cascaded);
+                    if (cascaded.length) {
+                        const names = cascaded
+                            .map((c) => (byId[c] ? byId[c].code : c))
+                            .join(", ");
+                        showToast("Also unticked (needed this): " + names);
+                    }
+                }
+                persist();
+                render();
+            }
+
+            /* ===================== MODAL ACTION HANDLERS ===================== */
+            const setupModal = document.getElementById("setupModal");
+            const setupStep1 = document.getElementById("setupStep1");
+            const setupStep2 = document.getElementById("setupStep2");
+
+            document
+                .getElementById("foundationBtn")
+                .addEventListener("click", () => {
+                    setupModal.classList.remove("hidden");
+                    setupStep1.style.display = "block";
+                    setupStep2.style.display = "none";
+                    document.getElementById("chkMAT092").checked =
+                        !state.waived["MAT092"];
+                    document.getElementById("chkENG091").checked =
+                        !state.waived["ENG091"];
+                });
+
+            document.querySelectorAll(".modal-close-trigger").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    closeModal();
+                });
+            });
+
+            window.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" || e.keyCode === 27) {
+                    closeModal();
+                }
+            });
+
+            document.getElementById("setupNo").addEventListener("click", () => {
+                state.waived["MAT092"] = true;
+                state.waived["ENG091"] = true;
+                state.done["MAT092"] = false;
+                state.done["ENG091"] = false;
+                persist();
+                render();
+                closeModal();
+            });
+
+            document
+                .getElementById("setupYes")
+                .addEventListener("click", () => {
+                    setupStep1.style.display = "none";
+                    setupStep2.style.display = "block";
+                });
+
+            document
+                .getElementById("setupSave")
+                .addEventListener("click", () => {
+                    state.waived["MAT092"] =
+                        !document.getElementById("chkMAT092").checked;
+                    state.waived["ENG091"] =
+                        !document.getElementById("chkENG091").checked;
+
+                    if (state.waived["MAT092"]) state.done["MAT092"] = false;
+                    if (state.waived["ENG091"]) state.done["ENG091"] = false;
+
+                    persist();
+                    render();
+                    closeModal();
+                });
+
+            /* ===================== TOOLBAR ===================== */
+            document
+                .getElementById("toggleSoftBtn")
+                .addEventListener("click", (e) => {
+                    showSoft = !showSoft;
+                    e.target.textContent = showSoft
+                        ? "Hide soft‑prereq lines"
+                        : "Show soft‑prereq lines";
+                    drawLines();
+                });
+            document
+                .getElementById("toggleLinesBtn")
+                .addEventListener("click", (e) => {
+                    showLines = !showLines;
+                    e.target.textContent = showLines
+                        ? "Hide all lines"
+                        : "Show all lines";
+                    drawLines();
+                });
+            (function () {
+                const btn = document.getElementById("resetBtn");
+                let armed = false;
+                let armTimer = null;
+                function disarm() {
+                    armed = false;
+                    clearTimeout(armTimer);
+                    btn.textContent = "Reset all progress";
+                    btn.classList.remove("armed");
+                }
+                btn.addEventListener("click", () => {
+                    if (!armed) {
+                        armed = true;
+                        btn.textContent = "Click again to confirm";
+                        btn.classList.add("armed");
+                        clearTimeout(armTimer);
+                        armTimer = setTimeout(disarm, 4000);
+                        return;
+                    }
+                    disarm();
+                    state = { done: {}, text: {}, waived: {} };
+                    persist();
+                    buildCanvas();
+                    render();
+                    showToast("All progress has been reset.");
+                });
+            })();
+
+            /* ===================== INIT ===================== */
+            (async function init() {
+                loadState();
+                buildCanvas();
+                render();
+
+                setTimeout(render, 100);
+
+                window.addEventListener("resize", drawLines);
+                document
+                    .querySelector(".scrollwrap")
+                    .addEventListener("scroll", drawLines);
+            })();
+        </script>
+    </body>
+</html>
