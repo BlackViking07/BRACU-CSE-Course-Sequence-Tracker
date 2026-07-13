@@ -6,13 +6,19 @@ An elegant, high-fidelity, interactive visual curriculum roadmap designed specif
 
 ## 🚀 Key Features
 
-*   **Persistent Visual Prerequisite Engine:** Displays full curriculum paths across a multi-column track architecture. 
+*   **Persistent Visual Prerequisite Engine:** Displays full curriculum paths across a multi-column track architecture.
+   
     *   🔴 **Solid Crimson Lines:** Hard Prerequisites (HP) that actively lock/unlock advanced course enrollment.
     *   🔵 **Dotted Teal Lines:** Soft Prerequisites (SP) that offer recommended academic pathways without blocking your progress.
+      
 *   **Path Spotlight / Isolation:** Hovering over any course card dynamically highlights its direct incoming and outgoing prerequisite pathways while beautifully dimming the background lattice for quick scannability.
+  
 *   **Intelligent Hard Prerequisite Validation:** Prevents accidental tracking. Checking a course box requires all hard prerequisites to be completed first; unchecking a core prerequisite automatically runs a cascading reset on all downstream dependents.
+  
 *   **Dynamic Foundation Course Mixer:** A customized modal setup for managing non-credit foundation courses (`MAT092` / `ENG091`). Students who place out can instantly waive them, greying out the nodes and directly unlocking advanced tiers (`MAT110` / `ENG101`).
+  
 *   **Live Credit Analytics:** Dynamically calculates overall program credits completed vs. total remaining, broken down comprehensively by category bars (Program Core, School Core, GenEd, Electives, and Thesis).
+  
 *   **Local Auto-Save Matrix:** Uses modern browser `localStorage` to save all completed statuses and customized typed names instantly. Your tracker state stays private to you and persists perfectly across page refreshes.
 
 ---
@@ -43,7 +49,7 @@ Since this project is completely self-contained within a single file, launching 
 3. Open the ```index.html``` file in any modern web browser (Chrome, Firefox, Edge, or Safari):
    ```bash
    # Or simply double-click the file in your file explorer
-   open index.html
+       open index.html
    ```
 
 
