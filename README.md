@@ -38,18 +38,19 @@ Since this project is completely self-contained within a single file, launching 
 
 1. Clone this repository to your local machine:
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/cse-course-sequence-tracker.git](https://github.com/YOUR_USERNAME/cse-course-sequence-tracker.git)
+   git clone [https://github.com/BlackViking07/BRACU-CSE-Course-Sequence-Tracker.git]
    ```
 
 2. Navigate into the directory:
    ```bash
-   cd cse-course-sequence-tracker
+   cd BRACU-CSE-Course-Sequence-Tracker
    ```
 
 3. Open the ```index.html``` file in any modern web browser (Chrome, Firefox, Edge, or Safari):
    ```bash
    # Or simply double-click the file in your file explorer
-       open index.html
+
+   open index.html
    ```
 
 
