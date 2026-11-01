@@ -1348,18 +1348,34 @@
             let showLines = true;
 
             function loadState() {
+                const emptyState = { done: {}, text: {}, waived: {} };
                 try {
                     const r = localStorage.getItem("cse-tracker-state");
                     if (r) {
-                        state = JSON.parse(r);
+                        const saved = JSON.parse(r);
+                        if (
+                            saved &&
+                            typeof saved === "object" &&
+                            !Array.isArray(saved)
+                        ) {
+                            state = { ...emptyState, ...saved };
+                        }
                     }
-                    if (!state.waived) state.waived = {};
                 } catch (e) {
                     console.error(
                         "Could not load state from local storage.",
                         e,
                     );
                 }
+                ["done", "text", "waived"].forEach((key) => {
+                    if (
+                        !state[key] ||
+                        typeof state[key] !== "object" ||
+                        Array.isArray(state[key])
+                    ) {
+                        state[key] = {};
+                    }
+                });
             }
 
             let saveTimer = null;
