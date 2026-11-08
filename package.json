@@ -3,9 +3,13 @@
   "name": "bracu-cse-course-sequence-tracker",
   "version": "1.0.0",
   "private": true,
-  "description": "BRACU CSE Course Sequence Tracker",
+  "type": "module",
   "scripts": {
-    "start": "npx serve .",
-    "build": "echo \"Static project: no build required\""
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
   }
 }
