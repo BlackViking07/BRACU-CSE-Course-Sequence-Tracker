@@ -1,0 +1,11 @@
+
+{
+  "name": "bracu-cse-course-sequence-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BRACU CSE Course Sequence Tracker",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo \"Static project: no build required\""
+  }
+}
